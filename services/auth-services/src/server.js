@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 4001;
 app.use(cors());
 app.use(express.json());
 
+// auth endpoit 
 app.use("/api/auth", authRoutes);
 
 app.get("/health", (_req, res) => res.json({ ok: true, service: "auth-service" }));
