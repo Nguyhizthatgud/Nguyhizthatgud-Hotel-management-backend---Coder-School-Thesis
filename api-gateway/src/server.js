@@ -1,24 +1,53 @@
 // api-gateway/src/server.js
-require("dotenv").config({ path: ".env.gateway" });
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.gateway" });
 
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
-const morgan = require("morgan");
-const { v4: uuidv4 } = require("uuid");
+import express from "express";
 
-const logger = require("../../shared/utils/logger");
-const errorHandler = require("../../shared/middleware/errorHandler");
-const { authMiddleware, requireRole } = require("../../shared/middleware/auth");
+import cors from "cors";
+
+import helmet from "helmet";
+
+import rateLimit from "express-rate-limit";
+
+import morgan from "morgan";
+
+import { v4 as uuidv4 } from "uuid";
+import admin from "firebase-admin";
+import serviceAccount from "../../firebase-service-account.json" with { type: "json" };
+
+// Initialize Firebase Admin SDK
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
+
+
+
+
+
+import logger from "../../shared/utils/logger.js";
+
+import errorHandler from "../../shared/middleware/errorHandler.js";
+
+import { validateAndInjectUser } from "../middleware/authGateway.js";
+
+
 
 // Import routes
-const authRoutes = require("../routes/auth");
-const roomRoutes = require("../routes/room");
-const bookingRoutes = require("../routes/booking");
-const guestRoutes = require("../routes/guest");
-const staffRoutes = require("../routes/staff");
-const transactionRoutes = require("../routes/transaction");
+
+import authRoutes from "../routes/auth.js";
+
+import roomRoutes from "../routes/room.js";
+
+import bookingRoutes from "../routes/booking.js";
+
+import guestRoutes from "../routes/guest.js";
+
+import staffRoutes from "../routes/staff.js";
+
+import transactionRoutes from "../routes/transaction.js";
+
+
 
 const app = express();
 
@@ -55,6 +84,9 @@ const limiter = rateLimit({
     legacyHeaders: false
 });
 app.use(limiter);
+
+// Gateway Auth Middleware - validates Firebase tokens and injects user headers
+app.use(validateAndInjectUser);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
@@ -106,4 +138,4 @@ process.on("SIGTERM", () => {
     });
 });
 
-module.exports = app;
+export default app;

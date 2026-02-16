@@ -4,11 +4,11 @@
 
 ➡️ Microservices: Each service owns its data
 
-- [ ] auth-service → Firebase Auth + Firestore (users collection)
-- [ ] hotel-service → Separate Firestore DB or PostgreSQL (hotels, rooms)
+- [x] auth-service → Firebase Auth + Firestore (users collection)
+- [x] hotel-service → Separate Firestore DB or PostgreSQL (hotels, rooms)
 - [ ] booking-service → MongoDB (bookings, transactions)
 
-➡️ Microservices communication between services: Services communicate via
+➡️ Microservices communication between services: Services communicate via - service to service calls
 
 - [ ] Synchronous: RESTful APIs (internal network) or gRPC (for performance)
 - [ ] Asynchronous: Message queues (e.g., RabbitMQ, Kafka) for events like booking confirmations

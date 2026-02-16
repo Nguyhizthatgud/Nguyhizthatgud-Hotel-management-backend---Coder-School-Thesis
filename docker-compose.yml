@@ -1,0 +1,195 @@
+version: "3.8"
+
+services:
+  # MongoDB - Shared database for all services
+  mongodb:
+    image: mongo:6.0
+    container_name: hotel-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: hotel
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - hotel-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis - Caching and rate limiting
+  redis:
+    image: redis:7-alpine
+    container_name: hotel-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - hotel-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: hotel-api-gateway
+    environment:
+      PORT: 3001
+      NODE_ENV: development
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      JWT_EXPIRES_IN: 15m
+      AUTH_SERVICE_URL: http://auth-service:4002
+      ROOM_SERVICE_URL: http://room-service:4004
+      BOOKING_SERVICE_URL: http://booking-service:4003
+      GUEST_SERVICE_URL: http://guest-service:4005
+      STAFF_SERVICE_URL: http://staff-service:4006
+      TRANSACTION_SERVICE_URL: http://transaction-service:4007
+      RATE_LIMIT_WINDOW_MS: 15
+      RATE_LIMIT_MAX_REQUESTS: 100
+      LOG_LEVEL: info
+      MONGODB_URI: mongodb://admin:password123@mongodb:27017/hotel?authSource=admin
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "3001:3001"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - hotel-network
+    restart: unless-stopped
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./services/auth-services
+      dockerfile: Dockerfile
+    container_name: hotel-auth-service
+    environment:
+      PORT: 4002
+      NODE_ENV: development
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      MONGODB_URI: mongodb://admin:password123@mongodb:27017/hotel?authSource=admin
+    ports:
+      - "4002:4002"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - hotel-network
+    restart: unless-stopped
+
+  # Room Service
+  room-service:
+    build:
+      context: ./services/room-services
+      dockerfile: Dockerfile
+    container_name: hotel-room-service
+    environment:
+      PORT: 4004
+      NODE_ENV: development
+      MONGODB_URI: mongodb://admin:password123@mongodb:27017/hotel?authSource=admin
+    ports:
+      - "4004:4004"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - hotel-network
+    restart: unless-stopped
+
+  # Booking Service
+  booking-service:
+    build:
+      context: ./services/booking-services
+      dockerfile: Dockerfile
+    container_name: hotel-booking-service
+    environment:
+      PORT: 4003
+      NODE_ENV: development
+      MONGODB_URI: mongodb://admin:password123@mongodb:27017/hotel?authSource=admin
+      ROOM_SERVICE_URL: http://room-service:4004
+    ports:
+      - "4003:4003"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - hotel-network
+    restart: unless-stopped
+
+  # Guest Service
+  guest-service:
+    build:
+      context: ./services/guest-services
+      dockerfile: Dockerfile
+    container_name: hotel-guest-service
+    environment:
+      PORT: 4005
+      NODE_ENV: development
+      MONGODB_URI: mongodb://admin:password123@mongodb:27017/hotel?authSource=admin
+    ports:
+      - "4005:4005"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - hotel-network
+    restart: unless-stopped
+
+  # Staff Service
+  staff-service:
+    build:
+      context: ./services/staff-services
+      dockerfile: Dockerfile
+    container_name: hotel-staff-service
+    environment:
+      PORT: 4006
+      NODE_ENV: development
+      MONGODB_URI: mongodb://admin:password123@mongodb:27017/hotel?authSource=admin
+    ports:
+      - "4006:4006"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - hotel-network
+    restart: unless-stopped
+
+  # Transaction Service
+  transaction-service:
+    build:
+      context: ./services/transaction-services
+      dockerfile: Dockerfile
+    container_name: hotel-transaction-service
+    environment:
+      PORT: 4007
+      NODE_ENV: development
+      MONGODB_URI: mongodb://admin:password123@mongodb:27017/hotel?authSource=admin
+    ports:
+      - "4007:4007"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - hotel-network
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
+  redis_data:
+
+networks:
+  hotel-network:
+    driver: bridge

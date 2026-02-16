@@ -1,9 +1,8 @@
 // api-gateway/routes/staff.js
-const express = require("express");
-const ServiceClient = require("../../shared/utils/serviceClient");
-const logger = require("../../shared/utils/logger");
-const { authMiddleware, requireRole } = require("../../shared/middleware/auth");
-const services = require("../config/services");
+import express from "express";
+import ServiceClient from "../../shared/utils/serviceClient.js";
+import logger from "../../shared/utils/logger.js";
+import services from "../config/services.js";
 
 const router = express.Router();
 const staffService = new ServiceClient(services.staff.url);
@@ -12,9 +11,9 @@ const staffService = new ServiceClient(services.staff.url);
  * GET /api/staff
  * List staff members (admin/manager only)
  */
-router.get("/", authMiddleware, requireRole(["admin", "manager"]), async (req, res, next) => {
+router.get("/", async (req, res, next) => {
     try {
-        const response = await staffService.get("/", {
+        const response = await staffService.get("/staff", {
             params: req.query,
             headers: { Authorization: req.headers.authorization }
         });
@@ -29,9 +28,9 @@ router.get("/", authMiddleware, requireRole(["admin", "manager"]), async (req, r
  * GET /api/staff/:id
  * Get staff details (admin/manager only)
  */
-router.get("/:id", authMiddleware, requireRole(["admin", "manager"]), async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
     try {
-        const response = await staffService.get(`/${req.params.id}`, {
+        const response = await staffService.get(`/staff/${req.params.id}`, {
             headers: { Authorization: req.headers.authorization }
         });
         res.status(response.status).json(response.data);
@@ -45,9 +44,9 @@ router.get("/:id", authMiddleware, requireRole(["admin", "manager"]), async (req
  * POST /api/staff
  * Add new staff (admin/manager only)
  */
-router.post("/", authMiddleware, requireRole(["admin", "manager"]), async (req, res, next) => {
+router.post("/", async (req, res, next) => {
     try {
-        const response = await staffService.post("/", req.body, {
+        const response = await staffService.post("/staff", req.body, {
             headers: { Authorization: req.headers.authorization }
         });
         logger.info("Staff added", { staffId: response.data.data?.id, addedBy: req.user.id });
@@ -62,9 +61,9 @@ router.post("/", authMiddleware, requireRole(["admin", "manager"]), async (req, 
  * PUT /api/staff/:id
  * Update staff (admin/manager only)
  */
-router.put("/:id", authMiddleware, requireRole(["admin", "manager"]), async (req, res, next) => {
+router.put("/:id", async (req, res, next) => {
     try {
-        const response = await staffService.put(`/${req.params.id}`, req.body, {
+        const response = await staffService.put(`/staff/${req.params.id}`, req.body, {
             headers: { Authorization: req.headers.authorization }
         });
         logger.info("Staff updated", { staffId: req.params.id, updatedBy: req.user.id });
@@ -75,4 +74,4 @@ router.put("/:id", authMiddleware, requireRole(["admin", "manager"]), async (req
     }
 });
 
-module.exports = router;
+export default router;

@@ -29,165 +29,66 @@ Key features covered:
 ## 📁 Project Structure
 
 ```
-hotel-management/
-├── src/
-│   ├── app/
-│   │   ├── api/                          # API Routes (Backend)
-│   │   │   ├── auth/
-│   │   │   │   ├── login/
-│   │   │   │   │   └── route.js         # POST /api/auth/login
-│   │   │   │   ├── register/
-│   │   │   │   │   └── route.js         # POST /api/auth/register
-│   │   │   │   ├── logout/
-│   │   │   │   │   └── route.js         # POST /api/auth/logout
-│   │   │   │   ├── refresh/
-│   │   │   │   │   └── route.js         # POST /api/auth/refresh
-│   │   │   │   └── me/
-│   │   │   │       └── route.js         # GET /api/auth/me
-│   │   │   │
-│   │   │   ├── rooms/
-│   │   │   │   ├── route.js             # GET /api/rooms (list), POST /api/rooms (create)
-│   │   │   │   ├── [id]/
-│   │   │   │   │   └── route.js         # GET/PUT/DELETE /api/rooms/:id
-│   │   │   │   ├── available/
-│   │   │   │   │   └── route.js         # GET /api/rooms/available?from=&to=
-│   │   │   │   └── types/
-│   │   │   │       └── route.js         # GET /api/rooms/types
-│   │   │   │
-│   │   │   ├── bookings/
-│   │   │   │   ├── route.js             # GET /api/bookings (list), POST /api/bookings (create)
-│   │   │   │   ├── [id]/
-│   │   │   │   │   └── route.js         # GET/PUT/DELETE /api/bookings/:id
-│   │   │   │   ├── [id]/cancel/
-│   │   │   │   │   └── route.js         # POST /api/bookings/:id/cancel
-│   │   │   │   ├── [id]/confirm/
-│   │   │   │   │   └── route.js         # POST /api/bookings/:id/confirm
-│   │   │   │   └── user/[userId]/
-│   │   │   │       └── route.js         # GET /api/bookings/user/:userId
-│   │   │   │
-│   │   │   ├── guests/
-│   │   │   │   ├── route.js             # GET /api/guests (list), POST /api/guests (create)
-│   │   │   │   ├── [id]/
-│   │   │   │   │   └── route.js         # GET/PUT/DELETE /api/guests/:id
-│   │   │   │   └── search/
-│   │   │   │       └── route.js         # GET /api/guests/search?q=
-│   │   │   │
-│   │   │   ├── payments/
-│   │   │   │   ├── route.js             # GET /api/payments (list), POST /api/payments (create)
-│   │   │   │   ├── [id]/
-│   │   │   │   │   └── route.js         # GET /api/payments/:id
-│   │   │   │   ├── webhook/
-│   │   │   │   │   └── route.js         # POST /api/payments/webhook (Stripe/PayPal)
-│   │   │   │   └── refund/
-│   │   │   │       └── route.js         # POST /api/payments/refund
-│   │   │   │
-│   │   │   ├── staff/
-│   │   │   │   ├── route.js             # GET /api/staff (list), POST /api/staff (create)
-│   │   │   │   ├── [id]/
-│   │   │   │   │   └── route.js         # GET/PUT/DELETE /api/staff/:id
-│   │   │   │   └── schedule/
-│   │   │   │       └── route.js         # GET/POST /api/staff/schedule
-│   │   │   │
-│   │   │   ├── services/
-│   │   │   │   ├── route.js             # GET /api/services (list), POST /api/services (create)
-│   │   │   │   ├── [id]/
-│   │   │   │   │   └── route.js         # GET/PUT/DELETE /api/services/:id
-│   │   │   │   └── bookings/
-│   │   │   │       └── route.js         # POST /api/services/bookings (spa, restaurant, etc.)
-│   │   │   │
-│   │   │   ├── housekeeping/
-│   │   │   │   ├── route.js             # GET /api/housekeeping (list tasks)
-│   │   │   │   ├── [id]/
-│   │   │   │   │   └── route.js         # GET/PUT /api/housekeeping/:id
-│   │   │   │   └── assign/
-│   │   │   │       └── route.js         # POST /api/housekeeping/assign
-│   │   │   │
-│   │   │   ├── reports/
-│   │   │   │   ├── revenue/
-│   │   │   │   │   └── route.js         # GET /api/reports/revenue?from=&to=
-│   │   │   │   ├── occupancy/
-│   │   │   │   │   └── route.js         # GET /api/reports/occupancy?from=&to=
-│   │   │   │   └── bookings/
-│   │   │   │       └── route.js         # GET /api/reports/bookings?from=&to=
-│   │   │   │
-│   │   │   ├── notifications/
-│   │   │   │   ├── route.js             # GET /api/notifications (list)
-│   │   │   │   ├── [id]/read/
-│   │   │   │   │   └── route.js         # PUT /api/notifications/:id/read
-│   │   │   │   └── send/
-│   │   │   │       └── route.js         # POST /api/notifications/send
-│   │   │   │
-│   │   │   └── upload/
-│   │   │       └── route.js             # POST /api/upload (images, documents)
-│   │   │
-│   │   ├── (dashboard)/                  # Frontend Dashboard Routes
-│   │   ├── (website)/                    # Frontend Public Website
-│   │   └── layout.js
+hotel-booking-app-backend/
+├── services/
+│   ├── auth-service/              # Authentication & Authorization
+│   │   ├── routes/
+│   │   ├── controllers/
+│   │   └── models/
 │   │
-│   ├── lib/
-│   │   ├── db/
-│   │   │   ├── mongoose.js              # MongoDB connection (Mongoose)
-│   │   │   ├── prisma.js                # Prisma client (if using Prisma)
-│   │   │   └── migrations/              # Database migrations
-│   │   │
-│   │   ├── models/                       # Database Models
-│   │   │   ├── User.js
-│   │   │   ├── Room.js
-│   │   │   ├── Booking.js
+│   ├── guest-service/             # Guest Management
+│   │   ├── routes/
+│   │   │   ├── guestRoutes.js
+│   │   │   └── bookingRoutes.js
+│   │   ├── controllers/
+│   │   │   ├── guestController.js
+│   │   │   └── bookingController.js
+│   │   ├── models/
 │   │   │   ├── Guest.js
-│   │   │   ├── Payment.js
-│   │   │   ├── Staff.js
-│   │   │   ├── Service.js
-│   │   │   ├── Housekeeping.js
-│   │   │   └── Notification.js
-│   │   │
-│   │   ├── services/                     # Business Logic
-│   │   │   ├── authService.js
-│   │   │   ├── roomService.js
-│   │   │   ├── bookingService.js
-│   │   │   ├── paymentService.js
-│   │   │   ├── emailService.js          # Send emails (nodemailer, resend)
-│   │   │   ├── smsService.js            # Send SMS (Twilio)
-│   │   │   └── notificationService.js
-│   │   │
-│   │   ├── middleware/
-│   │   │   ├── auth.js                  # JWT verification, session check
-│   │   │   ├── errorHandler.js          # Global error handler
-│   │   │   ├── rateLimiter.js           # Rate limiting (upstash/redis)
-│   │   │   ├── validation.js            # Request validation (zod)
-│   │   │   └── logger.js                # Request logging
-│   │   │
-│   │   ├── utils/
-│   │   │   ├── jwt.js                   # JWT sign/verify helpers
-│   │   │   ├── bcrypt.js                # Password hashing
-│   │   │   ├── validators.js            # Input validators
-│   │   │   ├── dateHelpers.js           # Date formatting, availability checks
-│   │   │   ├── constants.js             # App constants (roles, statuses)
-│   │   │   └── apiResponse.js           # Standardized API responses
-│   │   │
-│   │   └── config/
-│   │       ├── index.js                 # Environment config
-│   │       └── cloudinary.js            # Cloudinary config (image uploads)
+│   │   │   └── Booking.js
+│   │   └── src/server.js
 │   │
-│   ├── types/                            # TypeScript types (if using TS)
-│   │   ├── api.ts
-│   │   ├── models.ts
-│   │   └── next-auth.d.ts
+│   ├── room-service/              # Room Management
+│   │   ├── routes/
+│   │   │   └── roomRoutes.js
+│   │   ├── controllers/
+│   │   │   └── roomController.js
+│   │   ├── models/
+│   │   │   ├── Room.js
+│   │   │   └── RoomType.js
+│   │   └── src/server.js
 │   │
-│   └── middleware.js                     # Next.js middleware (global auth, redirects)
+│   ├── transaction-service/       # Billing & Transactions
+│   │   ├── routes/
+│   │   │   └── transactionRoutes.js
+│   │   ├── controllers/
+│   │   │   └── transactionController.js
+│   │   ├── models/
+│   │   │   ├── Transaction.js
+│   │   │   └── Invoice.js
+│   │   └── src/server.js
+│   │
+│   └── hotel-service/             # Hotel Operations
+│       ├── routes/
+│       ├── controllers/
+│       ├── models/
+│       └── src/server.js
 │
-├── prisma/                               # Prisma schema (if using Prisma)
-│   ├── schema.prisma
-│   └── migrations/
+├── api-gateway/                   # Single entry point (optional but recommended)
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── guestRoutes.js
+│   │   ├── roomRoutes.js
+│   │   └── transactionRoutes.js
+│   └── server.js
 │
-├── public/
-│   └── uploads/                          # Static file uploads
-│
-├── .env.local                            # Environment variables
-├── .env.example                          # Example env file
-├── next.config.js
-├── package.json
-└── README.md
+└── shared/                        # Shared utilities
+    ├── middleware/
+    │   ├── auth.js
+    │   └── errorHandler.js
+    ├── utils/
+    │   └── validators.js
+    └── constants/
 ```
 
 ---

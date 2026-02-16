@@ -49,3 +49,4 @@ coverage/
 .turbo/
 .vercel/
 *.pem
+"firebase-service-account.json" 

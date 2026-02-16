@@ -1,9 +1,9 @@
 // api-gateway/routes/auth.js
-const express = require("express");
-const ServiceClient = require("../../shared/utils/serviceClient");
-const logger = require("../../shared/utils/logger");
-const { authMiddleware } = require("../../shared/middleware/auth");
-const services = require("../config/services");
+import express from "express";
+import ServiceClient from "../../shared/utils/serviceClient.js";
+import logger from "../../shared/utils/logger.js";
+import { authMiddleware } from "../../shared/middleware/auth.js";
+import services from "../config/services.js";
 
 const router = express.Router();
 const authService = new ServiceClient(services.auth.url);
@@ -85,4 +85,4 @@ router.get("/me", authMiddleware, async (req, res, next) => {
     }
 });
 
-module.exports = router;
+export default router;

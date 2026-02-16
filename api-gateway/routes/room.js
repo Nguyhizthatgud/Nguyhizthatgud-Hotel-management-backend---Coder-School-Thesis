@@ -1,9 +1,8 @@
 // api-gateway/routes/room.js
-const express = require("express");
-const ServiceClient = require("../../shared/utils/serviceClient");
-const logger = require("../../shared/utils/logger");
-const { authMiddleware, requireRole } = require("../../shared/middleware/auth");
-const services = require("../config/services");
+import express from "express";
+import ServiceClient from "../../shared/utils/serviceClient.js";
+import logger from "../../shared/utils/logger.js";
+import services from "../config/services.js";
 
 const router = express.Router();
 const roomService = new ServiceClient(services.room.url);
@@ -14,7 +13,14 @@ const roomService = new ServiceClient(services.room.url);
  */
 router.get("/", async (req, res, next) => {
     try {
-        const response = await roomService.get("/", { params: req.query });
+        const response = await roomService.get("/api/rooms", {
+            params: req.query,
+            headers: {
+                "x-user-id": req.headers["x-user-id"],
+                "x-user-email": req.headers["x-user-email"],
+                "x-user-token": req.headers["x-user-token"]
+            }
+        });
         res.status(response.status).json(response.data);
     } catch (error) {
         logger.error("Fetch rooms failed", { error: error.message });
@@ -28,7 +34,13 @@ router.get("/", async (req, res, next) => {
  */
 router.get("/:id", async (req, res, next) => {
     try {
-        const response = await roomService.get(`/${req.params.id}`);
+        const response = await roomService.get(`/api/rooms/${req.params.id}`, {
+            headers: {
+                "x-user-id": req.headers["x-user-id"],
+                "x-user-email": req.headers["x-user-email"],
+                "x-user-token": req.headers["x-user-token"]
+            }
+        });
         res.status(response.status).json(response.data);
     } catch (error) {
         logger.error("Fetch room failed", { error: error.message, roomId: req.params.id });
@@ -40,10 +52,14 @@ router.get("/:id", async (req, res, next) => {
  * POST /api/rooms
  * Create new room (admin/manager only)
  */
-router.post("/", authMiddleware, requireRole(["admin", "manager"]), async (req, res, next) => {
+router.post("/", async (req, res, next) => {
     try {
-        const response = await roomService.post("/", req.body, {
-            headers: { Authorization: req.headers.authorization }
+        const response = await roomService.post("/api/rooms", req.body, {
+            headers: {
+                "x-user-id": req.headers["x-user-id"],
+                "x-user-email": req.headers["x-user-email"],
+                "x-user-token": req.headers["x-user-token"]
+            }
         });
         logger.info("Room created", { createdBy: req.user.id });
         res.status(response.status).json(response.data);
@@ -57,10 +73,14 @@ router.post("/", authMiddleware, requireRole(["admin", "manager"]), async (req, 
  * PUT /api/rooms/:id
  * Update room (admin/manager only)
  */
-router.put("/:id", authMiddleware, requireRole(["admin", "manager"]), async (req, res, next) => {
+router.put("/:id", async (req, res, next) => {
     try {
-        const response = await roomService.put(`/${req.params.id}`, req.body, {
-            headers: { Authorization: req.headers.authorization }
+        const response = await roomService.put(`/api/rooms/${req.params.id}`, req.body, {
+            headers: {
+                "x-user-id": req.headers["x-user-id"],
+                "x-user-email": req.headers["x-user-email"],
+                "x-user-token": req.headers["x-user-token"]
+            }
         });
         logger.info("Room updated", { roomId: req.params.id, updatedBy: req.user.id });
         res.status(response.status).json(response.data);
@@ -74,10 +94,14 @@ router.put("/:id", authMiddleware, requireRole(["admin", "manager"]), async (req
  * DELETE /api/rooms/:id
  * Delete room (admin only)
  */
-router.delete("/:id", authMiddleware, requireRole(["admin"]), async (req, res, next) => {
+router.delete("/:id", async (req, res, next) => {
     try {
-        const response = await roomService.delete(`/${req.params.id}`, {
-            headers: { Authorization: req.headers.authorization }
+        const response = await roomService.delete(`/api/rooms/${req.params.id}`, {
+            headers: {
+                "x-user-id": req.headers["x-user-id"],
+                "x-user-email": req.headers["x-user-email"],
+                "x-user-token": req.headers["x-user-token"]
+            }
         });
         logger.info("Room deleted", { roomId: req.params.id, deletedBy: req.user.id });
         res.status(response.status).json(response.data);
@@ -87,4 +111,4 @@ router.delete("/:id", authMiddleware, requireRole(["admin"]), async (req, res, n
     }
 });
 
-module.exports = router;
+export default router;

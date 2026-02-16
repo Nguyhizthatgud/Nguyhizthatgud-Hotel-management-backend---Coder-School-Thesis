@@ -1,9 +1,8 @@
 // api-gateway/routes/guest.js
-const express = require("express");
-const ServiceClient = require("../../shared/utils/serviceClient");
-const logger = require("../../shared/utils/logger");
-const { authMiddleware, requireRole } = require("../../shared/middleware/auth");
-const services = require("../config/services");
+import express from "express";
+import ServiceClient from "../../shared/utils/serviceClient.js";
+import logger from "../../shared/utils/logger.js";
+import services from "../config/services.js";
 
 const router = express.Router();
 const guestService = new ServiceClient(services.guest.url);
@@ -12,9 +11,9 @@ const guestService = new ServiceClient(services.guest.url);
  * GET /api/guests
  * List all guests (admin/manager/receptionist only)
  */
-router.get("/", authMiddleware, requireRole(["admin", "manager", "receptionist"]), async (req, res, next) => {
+router.get("/", async (req, res, next) => {
     try {
-        const response = await guestService.get("/", {
+        const response = await guestService.get("/guests", {
             params: req.query,
             headers: { Authorization: req.headers.authorization }
         });
@@ -29,9 +28,9 @@ router.get("/", authMiddleware, requireRole(["admin", "manager", "receptionist"]
  * GET /api/guests/:id
  * Get guest details (protected)
  */
-router.get("/:id", authMiddleware, async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
     try {
-        const response = await guestService.get(`/${req.params.id}`, {
+        const response = await guestService.get(`/guests/${req.params.id}`, {
             headers: { Authorization: req.headers.authorization }
         });
         res.status(response.status).json(response.data);
@@ -45,9 +44,9 @@ router.get("/:id", authMiddleware, async (req, res, next) => {
  * POST /api/guests
  * Register new guest (protected)
  */
-router.post("/", authMiddleware, async (req, res, next) => {
+router.post("/", async (req, res, next) => {
     try {
-        const response = await guestService.post("/", req.body, {
+        const response = await guestService.post("/guests", req.body, {
             headers: { Authorization: req.headers.authorization }
         });
         logger.info("Guest registered", { guestId: response.data.data?.id });
@@ -62,9 +61,9 @@ router.post("/", authMiddleware, async (req, res, next) => {
  * PUT /api/guests/:id
  * Update guest info (protected)
  */
-router.put("/:id", authMiddleware, async (req, res, next) => {
+router.put("/:id", async (req, res, next) => {
     try {
-        const response = await guestService.put(`/${req.params.id}`, req.body, {
+        const response = await guestService.put(`/guests/${req.params.id}`, req.body, {
             headers: { Authorization: req.headers.authorization }
         });
         logger.info("Guest updated", { guestId: req.params.id });
@@ -75,4 +74,4 @@ router.put("/:id", authMiddleware, async (req, res, next) => {
     }
 });
 
-module.exports = router;
+export default router;

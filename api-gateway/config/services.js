@@ -6,7 +6,7 @@
 
 const services = {
     auth: {
-        url: process.env.AUTH_SERVICE_URL || "http://localhost:3002",
+        url: process.env.AUTH_SERVICE_URL || "http://localhost:4002",
         name: "auth-service",
         routes: [
             { method: "POST", path: "/register", public: true },
@@ -17,7 +17,7 @@ const services = {
         ]
     },
     room: {
-        url: process.env.ROOM_SERVICE_URL || "http://localhost:3003",
+        url: process.env.ROOM_SERVICE_URL || "http://localhost:4004",
         name: "room-service",
         routes: [
             { method: "GET", path: "/rooms", public: true },
@@ -28,7 +28,7 @@ const services = {
         ]
     },
     booking: {
-        url: process.env.BOOKING_SERVICE_URL || "http://localhost:3004",
+        url: process.env.BOOKING_SERVICE_URL || "http://localhost:4003",
         name: "booking-service",
         routes: [
             { method: "GET", path: "/bookings", public: false },
@@ -39,7 +39,7 @@ const services = {
         ]
     },
     guest: {
-        url: process.env.GUEST_SERVICE_URL || "http://localhost:3005",
+        url: process.env.GUEST_SERVICE_URL || "http://localhost:4005",
         name: "guest-service",
         routes: [
             { method: "GET", path: "/guests", public: false, roles: ["admin", "manager", "receptionist"] },
@@ -49,7 +49,7 @@ const services = {
         ]
     },
     staff: {
-        url: process.env.STAFF_SERVICE_URL || "http://localhost:3006",
+        url: process.env.STAFF_SERVICE_URL || "http://localhost:4006",
         name: "staff-service",
         routes: [
             { method: "GET", path: "/staff", public: false, roles: ["admin", "manager"] },
@@ -59,7 +59,7 @@ const services = {
         ]
     },
     transaction: {
-        url: process.env.TRANSACTION_SERVICE_URL || "http://localhost:3007",
+        url: process.env.TRANSACTION_SERVICE_URL || "http://localhost:4007",
         name: "transaction-service",
         routes: [
             { method: "GET", path: "/transactions", public: false, roles: ["admin", "manager"] },
@@ -69,4 +69,4 @@ const services = {
     }
 };
 
-module.exports = services;
+export default services;
